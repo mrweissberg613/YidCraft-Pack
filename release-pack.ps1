@@ -107,8 +107,8 @@ Write-Host "Uploading ZIP..."
 $UploadURL = $Release.upload_url -replace "\{\?.*\}", ""
 
 
-Invoke-RestMethod `
-    -Uri "$UploadURL?name=$ZipName" `
+$Asset = Invoke-RestMethod `
+    -Uri "$UploadURL?name=$([uri]::EscapeDataString($ZipName))" `
     -Method POST `
     -Headers $Headers `
     -ContentType "application/zip" `
@@ -118,7 +118,10 @@ Invoke-RestMethod `
 
 # Output
 
-$DownloadURL = "https://github.com/$Repo/releases/download/$Version/$ZipName"
+$DownloadURL = $Asset.browser_download_url
+if ([string]::IsNullOrWhiteSpace($DownloadURL)) {
+    $DownloadURL = "https://github.com/$Repo/releases/latest/download/$ZipName"
+}
 
 
 Write-Host ""
@@ -129,6 +132,10 @@ Write-Host ""
 
 Write-Host "Download URL:"
 Write-Host $DownloadURL
+
+Write-Host ""
+Write-Host "Minecraft server URL:"
+Write-Host "resource-pack=$DownloadURL"
 
 Write-Host ""
 
