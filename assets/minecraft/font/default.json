@@ -9,7 +9,7 @@
     },
     {
       "type": "bitmap",
-      "file": "minecraft:ranks/goldsehekel.png",
+      "file": "jewish:item/goldsehekel.png",
       "ascent": 8,
       "height": 8,
       "chars": [""]
