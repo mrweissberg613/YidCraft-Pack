@@ -10,8 +10,8 @@
     {
       "type": "bitmap",
       "file": "jewish:item/goldsehekel.png",
-      "ascent": 8,
-      "height": 8,
+      "ascent": 16,
+      "height": 16,
       "chars": [""]
     },
     {
