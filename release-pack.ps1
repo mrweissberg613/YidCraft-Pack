@@ -2,7 +2,7 @@
 # YidCraft Resource Pack Release
 # ============================
 
-# Load private config
+# Load token
 if (!(Test-Path ".\config.ps1")) {
     Write-Host "ERROR: config.ps1 missing!"
     exit
@@ -14,51 +14,45 @@ if (!(Test-Path ".\config.ps1")) {
 # Settings
 $Repo = "mrweissberg613/YidCraft-Pack"
 $Version = "v1.0"
-$PackName = "YidCraft-Pack.zip"
+$ZipName = "YidCraft-Pack.zip"
 
 
-Write-Host "Creating resource pack ZIP..."
+Write-Host "Creating ZIP..."
 
 
-# Delete old zip
-if (Test-Path $PackName) {
-    Remove-Item $PackName
+if (Test-Path $ZipName) {
+    Remove-Item $ZipName
 }
 
 
-# Create zip
 Compress-Archive `
     -Path pack.mcmeta,pack.png,assets `
-    -DestinationPath $PackName
+    -DestinationPath $ZipName
 
 
-Write-Host "ZIP created!"
+Write-Host "ZIP created"
 
 
-# Generate SHA1
+# SHA1
 
-Write-Host "Generating SHA1..."
-
-$SHA1 = (Get-FileHash $PackName -Algorithm SHA1).Hash.ToLower()
+$SHA1 = (Get-FileHash $ZipName -Algorithm SHA1).Hash.ToLower()
 
 Write-Host "SHA1:"
 Write-Host $SHA1
 
 
 
-# Git update
+# Git
 
-Write-Host "Saving Git changes..."
+Write-Host "Pushing Git changes..."
 
 git add .
-
 git commit -m "Release $Version"
-
 git push
 
 
 
-# GitHub headers
+# Headers
 
 $Headers = @{
     Authorization = "Bearer $GitHubToken"
@@ -72,53 +66,54 @@ $Headers = @{
 Write-Host "Creating GitHub release..."
 
 
-$Body = @{
+$ReleaseBody = @{
     tag_name = $Version
+    target_commitish = "main"
     name = "YidCraft Resource Pack $Version"
     body = "Automatic resource pack release"
+    draft = $false
+    prerelease = $false
 } | ConvertTo-Json
-
 
 
 $Release = Invoke-RestMethod `
     -Uri "https://api.github.com/repos/$Repo/releases" `
     -Method POST `
     -Headers $Headers `
-    -Body $Body `
+    -Body $ReleaseBody `
     -ContentType "application/json"
 
 
 
-# Upload ZIP
+# Upload ZIP asset
 
-Write-Host "Uploading ZIP..."
+Write-Host "Uploading ZIP asset..."
 
 
-$UploadURL = $Release.upload_url -replace "\{.*",""
+$UploadURL = $Release.upload_url.Replace("{?name,label}", "")
 
 
 Invoke-RestMethod `
-    -Uri "$UploadURL?name=$PackName" `
+    -Uri "$UploadURL?name=$ZipName" `
     -Method POST `
     -Headers $Headers `
     -ContentType "application/zip" `
-    -InFile $PackName
+    -InFile $ZipName
 
 
 
-# Output information
+# Output
 
-$Download = "https://github.com/$Repo/releases/download/$Version/$PackName"
+$DownloadURL = "https://github.com/$Repo/releases/download/$Version/$ZipName"
 
 
 Write-Host ""
-Write-Host "============================"
-Write-Host " RELEASE COMPLETE "
-Write-Host "============================"
+Write-Host "=========================="
+Write-Host " RELEASE FINISHED "
+Write-Host "=========================="
 Write-Host ""
-Write-Host "Download URL:"
-Write-Host $Download
+Write-Host "Minecraft Download URL:"
+Write-Host $DownloadURL
 Write-Host ""
 Write-Host "SHA1:"
 Write-Host $SHA1
-Write-Host ""
