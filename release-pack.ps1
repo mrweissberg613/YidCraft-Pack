@@ -11,14 +11,22 @@ if (!(Test-Path ".\config.ps1")) {
 . .\config.ps1
 
 
-# Settings
+# Ask release information
+
+$Version = Read-Host "Enter release version (example: v1.1)"
+
+$ReleaseTitle = Read-Host "Enter release title"
+
+$Description = Read-Host "Enter a brief description of this update"
+
+
 $Repo = "mrweissberg613/YidCraft-Pack"
-$Version = "v1.0"
 $ZipName = "YidCraft-Pack.zip"
 
 
-Write-Host "Creating ZIP..."
 
+Write-Host ""
+Write-Host "Creating ZIP..."
 
 if (Test-Path $ZipName) {
     Remove-Item $ZipName
@@ -30,10 +38,13 @@ Compress-Archive `
     -DestinationPath $ZipName
 
 
-Write-Host "ZIP created"
+Write-Host "ZIP created!"
+
 
 
 # SHA1
+
+Write-Host "Generating SHA1..."
 
 $SHA1 = (Get-FileHash $ZipName -Algorithm SHA1).Hash.ToLower()
 
@@ -44,10 +55,13 @@ Write-Host $SHA1
 
 # Git
 
-Write-Host "Pushing Git changes..."
+Write-Host ""
+Write-Host "Updating GitHub repository..."
 
 git add .
-git commit -m "Release $Version"
+
+git commit -m "Release $Version - $ReleaseTitle"
+
 git push
 
 
@@ -63,34 +77,34 @@ $Headers = @{
 
 # Create release
 
+Write-Host ""
 Write-Host "Creating GitHub release..."
 
 
-$ReleaseBody = @{
+$ReleaseData = @{
     tag_name = $Version
-    target_commitish = "main"
-    name = "YidCraft Resource Pack $Version"
-    body = "Automatic resource pack release"
+    name = $ReleaseTitle
+    body = $Description
     draft = $false
     prerelease = $false
 } | ConvertTo-Json
+
 
 
 $Release = Invoke-RestMethod `
     -Uri "https://api.github.com/repos/$Repo/releases" `
     -Method POST `
     -Headers $Headers `
-    -Body $ReleaseBody `
+    -Body $ReleaseData `
     -ContentType "application/json"
 
 
 
-# Upload ZIP asset
+# Upload ZIP
 
-Write-Host "Uploading ZIP asset..."
+Write-Host "Uploading ZIP..."
 
-
-$UploadURL = $Release.upload_url.Replace("{?name,label}", "")
+$UploadURL = $Release.upload_url -replace "\{\?.*\}", ""
 
 
 Invoke-RestMethod `
@@ -108,12 +122,17 @@ $DownloadURL = "https://github.com/$Repo/releases/download/$Version/$ZipName"
 
 
 Write-Host ""
-Write-Host "=========================="
-Write-Host " RELEASE FINISHED "
-Write-Host "=========================="
+Write-Host "=============================="
+Write-Host " RELEASE COMPLETE "
+Write-Host "=============================="
 Write-Host ""
-Write-Host "Minecraft Download URL:"
+
+Write-Host "Download URL:"
 Write-Host $DownloadURL
+
 Write-Host ""
+
 Write-Host "SHA1:"
 Write-Host $SHA1
+
+Write-Host ""
