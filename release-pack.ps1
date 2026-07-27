@@ -104,21 +104,27 @@ $Release = Invoke-RestMethod `
 
 Write-Host "Uploading ZIP..."
 
-$UploadURL = $Release.upload_url -replace "\{\?.*\}", ""
+$UploadURL = $Release.upload_url -replace '\{\?.*\}', ''
+$UploadUri = $UploadURL + '?name=' + [uri]::EscapeDataString($ZipName)
 
+try {
+    $Asset = Invoke-RestMethod `
+        -Uri $UploadUri `
+        -Method POST `
+        -Headers $Headers `
+        -ContentType "application/zip" `
+        -InFile $ZipName
 
-$Asset = Invoke-RestMethod `
-    -Uri "$UploadURL?name=$([uri]::EscapeDataString($ZipName))" `
-    -Method POST `
-    -Headers $Headers `
-    -ContentType "application/zip" `
-    -InFile $ZipName
-
+    $DownloadURL = $Asset.browser_download_url
+}
+catch {
+    Write-Host "Asset upload failed: $($_.Exception.Message)"
+    $DownloadURL = "https://github.com/$Repo/releases/download/$Version/$ZipName"
+}
 
 
 # Output
 
-$DownloadURL = $Asset.browser_download_url
 if ([string]::IsNullOrWhiteSpace($DownloadURL)) {
     $DownloadURL = "https://github.com/$Repo/releases/latest/download/$ZipName"
 }
