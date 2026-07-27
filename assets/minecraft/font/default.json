@@ -1,0 +1,75 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "minecraft:ranks/owner.png",
+      "ascent": 8,
+      "height": 8,
+      "chars": [""]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:ranks/goldsehekel.png",
+      "ascent": 8,
+      "height": 8,
+      "chars": [""]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:ranks/admin.png",
+      "ascent": 8,
+      "height": 8,
+      "chars": [""]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:ranks/white.png",
+      "ascent": 8,
+      "height": 8,
+      "chars": [""]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:ranks/smod.png",
+      "ascent": 8,
+      "height": 8,
+      "chars": [""]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:ranks/mod.png",
+      "ascent": 8,
+      "height": 8,
+      "chars": [""]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:ranks/helper.png",
+      "ascent": 8,
+      "height": 8,
+      "chars": [""]
+    },
+	{
+      "type": "bitmap",
+      "file": "minecraft:ranks/builder.png",
+      "ascent": 8,
+      "height": 8,
+      "chars": [""]
+    },
+	{
+      "type": "bitmap",
+      "file": "minecraft:ranks/member.png",
+      "ascent": 8,
+      "height": 8,
+      "chars": [""]
+    },
+	
+    {
+      "type": "bitmap",
+      "file": "minecraft:ranks/chicken.png",
+      "ascent": 8,
+      "height": 8,
+      "chars": [""]
+    }
+  ]
+}
